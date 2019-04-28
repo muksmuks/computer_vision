@@ -1,7 +1,8 @@
 What are Channels and Kernels (according to EVA)?
 ==================================================================================================================
-An image 
-Kernel is a feature extractor. It finds a feature in all places it occurs in an image.
+Channels refer to the number of colors which represents an image. For example, there are three channels in a RGB image, the Red Channel, the Green Channel and the Blue Channel. Each of the channels in each pixel represents the intensity of each color that constitute that pixel.
+
+An an image, we are essentially seeing lots of distinguishable features together. Kernel is a feature extractor. It finds a feature wherever it occurs in an image.
 
 Why should we only (well mostly) use 3x3 Kernels?
 ==================================================================================================================
