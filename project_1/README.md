@@ -8,6 +8,7 @@ Why should we only (well mostly) use 3x3 Kernels?
 ==================================================================================================================
 
 Because GPU are optimised to handle it. Further any other filters(7x7) can be expressed in terms of multiple 3x3
+
 Why not even filters. As we need determining edges. A even number filter cannot express edge
 
 How many times do we need to perform 3x3 convolution operation to reach 1x1 from 199x199 (show calculations)
