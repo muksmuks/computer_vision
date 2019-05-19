@@ -1,8 +1,8 @@
 ##Attempt 1
-###File Name : Week 4 - 1st DNN.ipynb
-###Low number of paramters
-###No of epochs : 40
-###Low accuracy though : 98.27
+* File Name : Week 4 - 1st DNN.ipynb
+* Low number of paramters
+* No of epochs : 40
+* Low accuracy though : 98.27
 
 
 
