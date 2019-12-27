@@ -8,26 +8,7 @@ import tensorflow as tf
 ```
 
 
-<p style="color: red;">
-The default version of TensorFlow in Colab will soon switch to TensorFlow 2.x.<br>
-We recommend you <a href="https://www.tensorflow.org/guide/migrate" target="_blank">upgrade</a> now 
-or ensure your notebook will continue to use TensorFlow 1.x via the <code>%tensorflow_version 1.x</code> magic:
-<a href="https://colab.research.google.com/notebooks/tensorflow_version.ipynb" target="_blank">more info</a>.</p>
-
-
-
-    WARNING:tensorflow:
-    The TensorFlow contrib module will not be included in TensorFlow 2.0.
-    For more information, please see:
-      * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
-      * https://github.com/tensorflow/addons
-      * https://github.com/tensorflow/io (for I/O related ops)
-    If you depend on functionality not listed there, please file an issue.
-    
-
-
 #####Enable Eager execution
-
 
 ```
 tf.enable_eager_execution()
