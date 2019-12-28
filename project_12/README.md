@@ -175,6 +175,12 @@ plt.ylabel("Learning Rate")
 
 ![png](W12_files/W12_18_1.png)
 
+![png](W12_files/project_12/%24409C76315ED0F55E.jpg)
+
+![png](W12_files/%24409C76315ED0F55E.jpg)
+
+![png](project_12/%24409C76315ED0F55E.jpg)
+
 
 Optimizer
 ===================
