@@ -4,21 +4,33 @@
 import numpy as np
 import time, math
 from tqdm import tqdm_notebook as tqdm
+
 import tensorflow as tf
+import tensorflow.contrib.eager as tfe
 ```
 
-
 #####Enable Eager execution
+
 
 ```
 tf.enable_eager_execution()
 ```
 
+####Hyperparameters
+
+
+```
+BATCH_SIZE = 512 #@param {type:"integer"}
+MOMENTUM = 0.9 #@param {type:"number"}
+LEARNING_RATE = 0.4 #@param {type:"number"}
+WEIGHT_DECAY = 5e-4 #@param {type:"number"}
+EPOCHS = 24 #@param {type:"integer"}
+```
+
 https://mc.ai/tutorial-1-cifar10-with-google-colabs-free-gpu%E2%80%8A-%E2%80%8A92-5/
 
-####Initialize the weights/parameters just like numpy
+####Initialize the weights/parameters just like Pytorch
 Initialization function now returns a NumPy array for eager execution.
-
 
 
 ```
@@ -81,6 +93,7 @@ class DavidNet(tf.keras.Model):
     h = self.pool(self.blk3(self.blk2(self.blk1(self.init_conv_bn(x)))))
     h = self.linear(h) * self.weight
     ce = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=h, labels=y)
+    loss = tf.reduce_sum(ce)
     correct = tf.reduce_sum(tf.cast(tf.math.equal(tf.argmax(h, axis = 1), y), tf.float32))
     return loss, correct
 ```
@@ -109,26 +122,12 @@ x_test = normalize(x_test)
 ```
 
     Downloading data from https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
-    170500096/170498071 [==============================] - 4s 0us/step
+    170500096/170498071 [==============================] - 6s 0us/step
 
 
 
 ```
 model = DavidNet()
-```
-
-####Hyperparameters
-
-
-```
-BATCH_SIZE = 512 #@param {type:"integer"}
-MOMENTUM = 0.9 #@param {type:"number"}
-LEARNING_RATE = 0.4 #@param {type:"number"}
-WEIGHT_DECAY = 5e-4 #@param {type:"number"}
-EPOCHS = 24 #@param {type:"integer"}
-
-
-
 ```
 
 
@@ -137,13 +136,38 @@ batches_per_epoch = len_train//BATCH_SIZE + 1
 ```
 
 ####Learning Schedule
+Learning rate schedule in which the learning rate is updating during training according to some specified rule.
 
 
 ```
 lr_schedule = lambda t: np.interp([t], [0, (EPOCHS+1)//5, EPOCHS], [0, LEARNING_RATE, 0])[0]
+#No of iterations/batches seen so far
 global_step = tf.train.get_or_create_global_step()
+###global_step/iterations_per_epoch gives the epoch ,it is in
+###Use the lr_schedule to get the extrapolated values
 lr_func = lambda: lr_schedule(global_step/batches_per_epoch)/BATCH_SIZE
 ```
+
+
+```
+from matplotlib import pyplot as plt
+
+p = plt.plot([0, (EPOCHS+1)//5, EPOCHS], [0, LEARNING_RATE, 0])
+plt.text(15, 0.4, "Learning Schedule")
+plt.xlabel("No of Epochs")
+plt.ylabel("Learning Rate")
+```
+
+
+
+
+    Text(0, 0.5, 'Learning Rate')
+
+
+
+
+![png](W12_files/W12_18_1.png)
+
 
 ####Optimizer
 
@@ -172,7 +196,6 @@ Final data is printed in a formatted output. TQDM module provides a nice progres
 
 
 ```
-
 t = time.time()
 test_set = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(BATCH_SIZE)
 
@@ -212,7 +235,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 1 lr: 0.08 train loss: 1.6123115252685547 train acc: 0.41492 val loss: 1.343320654296875 val acc: 0.5138 time: 40.58491253852844
+    epoch: 1 lr: 0.08 train loss: 1.6242557904052735 train acc: 0.4115 val loss: 1.1655838928222657 val acc: 0.5841 time: 43.35936760902405
 
 
 
@@ -220,7 +243,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 2 lr: 0.16 train loss: 0.880396572265625 train acc: 0.68762 val loss: 1.1061342071533202 val acc: 0.6559 time: 66.3628556728363
+    epoch: 2 lr: 0.16 train loss: 0.8867128491210937 train acc: 0.68642 val loss: 0.8291747970581055 val acc: 0.7225 time: 72.16898107528687
 
 
 
@@ -228,7 +251,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 3 lr: 0.24 train loss: 0.6634354071044922 train acc: 0.7699 val loss: 1.0162144622802733 val acc: 0.6759 time: 92.0680193901062
+    epoch: 3 lr: 0.24 train loss: 0.6647884490966797 train acc: 0.76846 val loss: 1.1889152709960937 val acc: 0.6557 time: 101.03358745574951
 
 
 
@@ -236,7 +259,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 4 lr: 0.32 train loss: 0.5679113000488282 train acc: 0.80426 val loss: 1.2067989166259765 val acc: 0.6756 time: 118.02463889122009
+    epoch: 4 lr: 0.32 train loss: 0.5692458438110352 train acc: 0.80234 val loss: 0.8238794799804687 val acc: 0.7291 time: 130.01852345466614
 
 
 
@@ -244,7 +267,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 5 lr: 0.4 train loss: 0.5076230065917968 train acc: 0.82546 val loss: 0.5814243072509766 val acc: 0.8065 time: 143.5640618801117
+    epoch: 5 lr: 0.4 train loss: 0.5131099627685547 train acc: 0.82408 val loss: 0.6833686828613281 val acc: 0.7809 time: 159.07214641571045
 
 
 
@@ -252,7 +275,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 6 lr: 0.37894736842105264 train loss: 0.4258741258239746 train acc: 0.85192 val loss: 0.8894630096435547 val acc: 0.7424 time: 169.08073949813843
+    epoch: 6 lr: 0.37894736842105264 train loss: 0.4182494326782227 train acc: 0.85674 val loss: 0.5184402328491211 val acc: 0.8239 time: 188.01205778121948
 
 
 
@@ -260,7 +283,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 7 lr: 0.35789473684210527 train loss: 0.3512538984680176 train acc: 0.87688 val loss: 0.5519296661376953 val acc: 0.8336 time: 194.7063615322113
+    epoch: 7 lr: 0.35789473684210527 train loss: 0.3462485992431641 train acc: 0.87914 val loss: 0.6897410263061523 val acc: 0.783 time: 217.00951433181763
 
 
 
@@ -268,7 +291,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 8 lr: 0.33684210526315794 train loss: 0.2971465603637695 train acc: 0.89774 val loss: 0.3554082954406738 val acc: 0.8763 time: 220.21709942817688
+    epoch: 8 lr: 0.33684210526315794 train loss: 0.3019173915100098 train acc: 0.89474 val loss: 0.39102679290771486 val acc: 0.871 time: 245.657568693161
 
 
 
@@ -276,7 +299,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 9 lr: 0.31578947368421056 train loss: 0.2597758149719238 train acc: 0.90936 val loss: 0.43626298828125 val acc: 0.8589 time: 245.9571406841278
+    epoch: 9 lr: 0.31578947368421056 train loss: 0.26032614440917967 train acc: 0.9099 val loss: 0.36541075439453125 val acc: 0.8755 time: 274.4259204864502
 
 
 
@@ -284,7 +307,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 10 lr: 0.2947368421052632 train loss: 0.22373272659301757 train acc: 0.9227 val loss: 0.40884993743896486 val acc: 0.8686 time: 271.4738552570343
+    epoch: 10 lr: 0.2947368421052632 train loss: 0.22718321548461914 train acc: 0.92174 val loss: 0.3325640899658203 val acc: 0.8886 time: 303.18052411079407
 
 
 
@@ -292,7 +315,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 11 lr: 0.2736842105263158 train loss: 0.20172485092163087 train acc: 0.93014 val loss: 0.335011173248291 val acc: 0.8871 time: 297.0782001018524
+    epoch: 11 lr: 0.2736842105263158 train loss: 0.19937638687133788 train acc: 0.93074 val loss: 0.40616001739501956 val acc: 0.878 time: 331.8529431819916
 
 
 
@@ -300,7 +323,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 12 lr: 0.25263157894736843 train loss: 0.17893115554809572 train acc: 0.9389 val loss: 0.4146263610839844 val acc: 0.8726 time: 322.48830699920654
+    epoch: 12 lr: 0.25263157894736843 train loss: 0.17945043281555176 train acc: 0.9376 val loss: 0.34952618560791016 val acc: 0.8911 time: 360.78307127952576
 
 
 
@@ -308,7 +331,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 13 lr: 0.23157894736842108 train loss: 0.15778067153930664 train acc: 0.94516 val loss: 0.3380121192932129 val acc: 0.8921 time: 348.0921607017517
+    epoch: 13 lr: 0.23157894736842108 train loss: 0.15687247940063476 train acc: 0.9458 val loss: 0.32603763656616214 val acc: 0.8962 time: 389.6722650527954
 
 
 
@@ -316,7 +339,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 14 lr: 0.2105263157894737 train loss: 0.13803950286865235 train acc: 0.95258 val loss: 0.31241399993896485 val acc: 0.8993 time: 373.49330496788025
+    epoch: 14 lr: 0.2105263157894737 train loss: 0.13960301528930663 train acc: 0.95124 val loss: 0.3150031341552734 val acc: 0.898 time: 418.47191882133484
 
 
 
@@ -324,7 +347,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 15 lr: 0.18947368421052635 train loss: 0.12452552841186523 train acc: 0.95746 val loss: 0.2920375457763672 val acc: 0.9081 time: 398.9108188152313
+    epoch: 15 lr: 0.18947368421052635 train loss: 0.1215735237121582 train acc: 0.9572 val loss: 0.3138913215637207 val acc: 0.9049 time: 447.37875866889954
 
 
 
@@ -332,7 +355,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 16 lr: 0.16842105263157897 train loss: 0.10761148307800293 train acc: 0.96282 val loss: 0.27241594314575196 val acc: 0.915 time: 424.2754681110382
+    epoch: 16 lr: 0.16842105263157897 train loss: 0.1070218357849121 train acc: 0.96282 val loss: 0.33923285217285154 val acc: 0.8992 time: 476.42308592796326
 
 
 
@@ -340,7 +363,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 17 lr: 0.1473684210526316 train loss: 0.09360897396087646 train acc: 0.96784 val loss: 0.3113281158447266 val acc: 0.9071 time: 449.4179883003235
+    epoch: 17 lr: 0.1473684210526316 train loss: 0.0898905020904541 train acc: 0.9696 val loss: 0.3117131134033203 val acc: 0.9011 time: 505.18851590156555
 
 
 
@@ -348,7 +371,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 18 lr: 0.12631578947368421 train loss: 0.07992435497283935 train acc: 0.97294 val loss: 0.283972705078125 val acc: 0.9145 time: 474.78596448898315
+    epoch: 18 lr: 0.12631578947368421 train loss: 0.07830657676696777 train acc: 0.97428 val loss: 0.3008590057373047 val acc: 0.9104 time: 534.1336109638214
 
 
 
@@ -356,7 +379,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 19 lr: 0.10526315789473689 train loss: 0.06784431285858154 train acc: 0.97764 val loss: 0.2984198028564453 val acc: 0.9154 time: 500.27870893478394
+    epoch: 19 lr: 0.10526315789473689 train loss: 0.06948649604797363 train acc: 0.97708 val loss: 0.2761876285552978 val acc: 0.9189 time: 562.6530432701111
 
 
 
@@ -364,7 +387,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 20 lr: 0.08421052631578951 train loss: 0.058885672836303714 train acc: 0.9814 val loss: 0.26679674377441404 val acc: 0.9243 time: 525.5448999404907
+    epoch: 20 lr: 0.08421052631578951 train loss: 0.05879084957122803 train acc: 0.98104 val loss: 0.2755186965942383 val acc: 0.9195 time: 591.4901742935181
 
 
 
@@ -372,7 +395,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 21 lr: 0.06315789473684214 train loss: 0.05234533462524414 train acc: 0.98338 val loss: 0.252153092956543 val acc: 0.925 time: 551.149943113327
+    epoch: 21 lr: 0.06315789473684214 train loss: 0.05019992988586426 train acc: 0.9846 val loss: 0.26473819427490236 val acc: 0.9217 time: 620.3184950351715
 
 
 
@@ -380,7 +403,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 22 lr: 0.04210526315789476 train loss: 0.044920551586151124 train acc: 0.98596 val loss: 0.25437313346862794 val acc: 0.9269 time: 576.7613279819489
+    epoch: 22 lr: 0.04210526315789476 train loss: 0.04178289047241211 train acc: 0.9874 val loss: 0.25552871551513673 val acc: 0.9258 time: 649.155341386795
 
 
 
@@ -388,7 +411,7 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 23 lr: 0.02105263157894738 train loss: 0.03930884412765503 train acc: 0.98796 val loss: 0.2485149833679199 val acc: 0.9302 time: 602.324624300003
+    epoch: 23 lr: 0.02105263157894738 train loss: 0.03780493816375732 train acc: 0.9886 val loss: 0.2482700782775879 val acc: 0.9277 time: 677.8685238361359
 
 
 
@@ -396,5 +419,9 @@ for epoch in range(EPOCHS):
 
 
     
-    epoch: 24 lr: 0.0 train loss: 0.03438503934860229 train acc: 0.9904 val loss: 0.2500582733154297 val acc: 0.9299 time: 627.6012361049652
+    epoch: 24 lr: 0.0 train loss: 0.03248236795425415 train acc: 0.99132 val loss: 0.24684863510131835 val acc: 0.9282 time: 706.6500709056854
 
+
+####Accuracy
+
+Validation Accuracy 92.82 in 706.6500709056854 seconds
