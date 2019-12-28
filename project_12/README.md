@@ -18,7 +18,8 @@ Enable Eager execution
 tf.enable_eager_execution()
 ```
 
-####Hyperparameters
+Hyperparameters
+=================
 
 
 ```
@@ -31,7 +32,8 @@ EPOCHS = 24 #@param {type:"integer"}
 
 https://mc.ai/tutorial-1-cifar10-with-google-colabs-free-gpu%E2%80%8A-%E2%80%8A92-5/
 
-####Initialize the weights/parameters just like Pytorch
+Initialize the weights/parameters just like Pytorch
+==================================
 Initialization function now returns a NumPy array for eager execution.
 
 
@@ -42,7 +44,8 @@ def init_pytorch(shape, dtype=tf.float32, partition_info=None):
   return tf.random.uniform(shape, minval=-bound, maxval=bound, dtype=dtype)
 ```
 
-####Davidnet Architecture
+Davidnet Architecture
+==========================
 ![David Net](https://cdn-images-1.medium.com/freeze/max/1000/1*uKqdR2jn83pOhTEMLHQpJQ.png?q=20)
 
 
@@ -100,7 +103,8 @@ class DavidNet(tf.keras.Model):
     return loss, correct
 ```
 
-####Load and preprocess the cifar10 dataset
+Load and preprocess the cifar10 dataset
+==========================
 cifar10 images are 32x32
 
 1. Pad the train images with 4px on each side, so that the image size becomes 40x40. (mode='reflect' ~ Pads with the reflection of the vector mirrored on the first and last values of the vector along each axis.)
@@ -137,7 +141,8 @@ model = DavidNet()
 batches_per_epoch = len_train//BATCH_SIZE + 1
 ```
 
-####Learning Schedule
+Learning Schedule
+======================
 Learning rate schedule in which the learning rate is updating during training according to some specified rule.
 
 
@@ -171,14 +176,16 @@ plt.ylabel("Learning Rate")
 ![png](W12_files/W12_18_1.png)
 
 
-####Optimizer
+Optimizer
+===================
 
 
 ```
 opt = tf.train.MomentumOptimizer(lr_func, momentum=MOMENTUM, use_nesterov=True)
 ```
 
-####Data Augmentation
+Data Augmentation
+========================
 1. Do a random crop so that the image size is 32x32, same as cifar10 image size
 2. Randomly flip an image horizontally (left to right). y is the seed value
 
@@ -189,7 +196,8 @@ This would make the model robust and prevent from overfitting
 data_aug = lambda x, y: (tf.image.random_flip_left_right(tf.random_crop(x, [32, 32, 3])), y)
 ```
 
-####Training
+Training
+====================
 The fit or fit_generator calls are not used for training.
 
 GradientTape records the forward pass gradient computations
@@ -424,6 +432,7 @@ for epoch in range(EPOCHS):
     epoch: 24 lr: 0.0 train loss: 0.03248236795425415 train acc: 0.99132 val loss: 0.24684863510131835 val acc: 0.9282 time: 706.6500709056854
 
 
-####Accuracy
+Accuracy
+=======================
 
 Validation Accuracy 92.82 in 706.6500709056854 seconds
