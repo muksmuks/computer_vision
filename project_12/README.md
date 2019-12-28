@@ -9,7 +9,9 @@ import tensorflow as tf
 import tensorflow.contrib.eager as tfe
 ```
 
-#####Enable Eager execution
+Enable Eager execution
+=========
+
 
 
 ```
