@@ -8,5 +8,13 @@ Sample Input : input.png
 
 
 Sample Output : 10400.png
+![Sample Output](./10400.png.png)
+
+
+
+Improvements
+=====================
+a) Increase no of images to be trained on
+b) Replace the basic CNN with better one
 
 
