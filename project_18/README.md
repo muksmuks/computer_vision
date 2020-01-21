@@ -8,6 +8,7 @@ Sample Input : input.png
 
 
 Sample Output : 10400.png
+
 ![Sample Output](./10400.png)
 
 
