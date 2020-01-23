@@ -7,7 +7,7 @@ Sample Input : input.png
 
 
 
-Sample Output : 10400.png
+GAN generated car images : After 10400 training iterations
 
 ![Sample Output](./10400.png)
 
